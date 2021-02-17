@@ -1,6 +1,7 @@
 # slack-moneyBot
 
-家計簿を管理するSlackのbot。 
+家計簿を管理するSlackのbot。　
+
 Google Spread Sheetと連携して、Slackからカテゴリーや金額等を入力するとシートに記載される仕組みになっている。
 
 ## 作った経緯
