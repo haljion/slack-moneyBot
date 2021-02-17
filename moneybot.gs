@@ -1,12 +1,6 @@
 // 変数
-var type = ["食材費","外食費","日用品","交通費","医療費","交際費","趣味","家賃","光熱費","借金返済","その他"];// 種別
-var OFolder = DriveApp.getFolderById('12sl9pRwQzp7yfPnGflQRjlhQ_Z61buqg');// 出力フォルダ
-
-// 使用方法
-var helpMsg = "以下の投稿に反応します。(！は全角)\n・収入！[人物コード]！名称！金額\n・支出！[財源コード]！[支出種別コード]！名称！金額(！精算額！日付)"
-+ "\n\n\n[人物コード]:1→悠治  2→夕奈\n[財源コード]:1→悠治現金  2→悠治クレカ1  3→悠治クレカ2  4→夕奈現金  5→夕奈クレカ"
-+ "\n[支出種別コード]:1→食材費  2→外食費  3→日用品  4→交通費  5→医療費  6→交際費  7→趣味  8→家賃  9→光熱費  10→借金返済  11→その他"
-+ "\n・update：アップデート情報の表示";
+var type = PropertiesService.getScriptProperties().getProperty('TYPE').split("!");// 種別
+var OFolder = DriveApp.getFolderById(PropertiesService.getScriptProperties().getProperty('OUTPUT_FOLDER'));// 出力フォルダ
 
 // アップデート情報
 var updateMsg = "2020/07/13：\n・精算額が0円かつ日付を指定した際、\"精算分\"列及び清算シートへの記入が行われないようにしました。\n"
@@ -17,7 +11,7 @@ function doPost(e) {
   // Bot User OAuth Access Token
   var token = PropertiesService.getScriptProperties().getProperty('SLACK_ACCESS_TOKEN');
   // Outgoing WebHooks のToken
-  var verifyToken = "27C3R4t7isGHodZM69X0Hh6C";
+  var verifyToken = PropertiesService.getScriptProperties().getProperty('VERIFY_TOKEN');
   
   if (verifyToken != e.parameter.token) {
     throw new Error("invalid token.");
@@ -133,13 +127,15 @@ function doPost(e) {
   }
   
   if(message == ""){
-    message = helpMsg;
+    message = PropertiesService.getScriptProperties().getProperty('HELP_MSG');
   }
   
   var slackApp = SlackApp.create(token); 
+  var icon = PropertiesService.getScriptProperties().getProperty('ICON_URL');
+  
   slackApp.chatPostMessage(e.parameter.channel_id, message, {
     username : "家計簿bot",
-    icon_url : "https://xn--o9j0bk3qqbxg7exc1k7714c.com/wp-content/uploads/2017/11/777-1.png"
+    icon_url : icon
   });
 }
 
@@ -154,7 +150,7 @@ function getSheetUrl(ss,sheet) {
 // 月ごとのスプレッドシートを作成する処理
 function createSS(fileName) {
   // テンプレートファイル
-  var template = DriveApp.getFileById('1AdXAVE5S17jFieXkRdNHqB2AVsyiBjH8zIoN334adXI');
+  var template = DriveApp.getFileById(PropertiesService.getScriptProperties().getProperty('TEMPLATE_FILE'));
   
   // テンプレート複製
   var newFile = template.makeCopy(fileName, OFolder);
